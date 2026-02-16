@@ -15,6 +15,7 @@ const openCount = document.getElementById("openCount");
 const todoItemTemplate = document.getElementById("todoItemTemplate");
 const filterButtons = document.querySelectorAll(".chip");
 const passwordToggles = document.querySelectorAll(".toggle-pass");
+const toastStack = document.getElementById("toastStack");
 
 const state = {
     token: localStorage.getItem("todo_token") || "",
@@ -32,6 +33,19 @@ function setMessage(el, msg, type = "info") {
     } else {
         el.style.color = "#5f6778";
     }
+}
+
+function showToast(message, type = "ok") {
+    if (!toastStack) return;
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    toastStack.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(6px)";
+        setTimeout(() => toast.remove(), 200);
+    }, 2200);
 }
 
 function setSession(token, identity) {
@@ -58,13 +72,8 @@ function decodeJwtSubject(token) {
     }
 }
 
-const API_BASE = (() => {
-    const stored = localStorage.getItem("todo_api");
-    if (stored) return stored;
-    if (window.location.origin === "null") return "http://localhost:8080";
-    if (window.location.port === "63342") return "http://localhost:8080";
-    return window.location.origin;
-})();
+const API_BASE = window.location.origin;
+const ALLOWED_ORIGINS = new Set(["http://localhost:8080", "http://127.0.0.1:8080"]);
 
 async function api(path, options = {}) {
     const headers = {
@@ -187,7 +196,7 @@ async function updateTodo(todo, patch) {
         });
         state.todos = state.todos.map(item => (item.id === updated.id ? updated : item));
         renderTodos();
-        setMessage(todoMessage, "Task updated.", "ok");
+        showToast("Task updated.", "ok");
     } catch (error) {
         setMessage(todoMessage, error.message, "error");
     }
@@ -198,7 +207,7 @@ async function deleteTodo(id) {
         await api(`/api/todos/${id}`, { method: "DELETE" });
         state.todos = state.todos.filter(todo => todo.id !== id);
         renderTodos();
-        setMessage(todoMessage, "Task deleted.", "ok");
+        showToast("Task deleted.", "ok");
     } catch (error) {
         setMessage(todoMessage, error.message, "error");
     }
@@ -224,6 +233,7 @@ loginForm.addEventListener("submit", async event => {
         setSession(data.token, identity);
         applyAuthView();
         await loadTodos();
+        showToast("Logged in.", "ok");
     } catch (error) {
         setMessage(authMessage, error.message, "error");
     }
@@ -274,7 +284,7 @@ todoForm.addEventListener("submit", async event => {
         state.todos.unshift(created);
         todoForm.reset();
         renderTodos();
-        setMessage(todoMessage, "Task created.", "ok");
+        showToast("Task created.", "ok");
     } catch (error) {
         setMessage(todoMessage, error.message, "error");
     }
@@ -285,7 +295,8 @@ logoutBtn.addEventListener("click", () => {
     applyAuthView();
     switchAuthTab("login");
     renderTodos();
-    setMessage(authMessage, "Logged out.", "ok");
+    showToast("Logged out.", "ok");
+    setMessage(authMessage, "");
 });
 
 filterButtons.forEach(button => {
@@ -313,6 +324,12 @@ function init() {
     switchAuthTab("login");
     applyAuthView();
     renderTodos();
+    if (!ALLOWED_ORIGINS.has(window.location.origin)) {
+        setMessage(authMessage, "Open this app at http://localhost:8080 to sign in.", "error");
+        loginForm.querySelectorAll("input, button").forEach(el => (el.disabled = true));
+        registerForm.querySelectorAll("input, button").forEach(el => (el.disabled = true));
+        return;
+    }
     if (state.token) {
         if (!state.identity) {
             state.identity = decodeJwtSubject(state.token);
