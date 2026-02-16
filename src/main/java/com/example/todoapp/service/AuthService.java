@@ -8,6 +8,7 @@ import com.example.todoapp.repository.UserRepository;
 import com.example.todoapp.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -51,14 +52,20 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
         String usernameOrEmail = request.usernameOrEmail().trim();
-        String emailCandidate = usernameOrEmail.toLowerCase();
-        authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(usernameOrEmail, request.password())
         );
 
-        User user = userRepository.findByUsername(usernameOrEmail)
-            .or(() -> userRepository.findByEmail(emailCandidate))
-            .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+        Object principal = authentication.getPrincipal();
+        User user;
+        if (principal instanceof User authenticatedUser) {
+            user = authenticatedUser;
+        } else {
+            String principalName = authentication.getName();
+            user = userRepository.findByUsername(principalName)
+                .or(() -> userRepository.findByEmail(principalName.toLowerCase()))
+                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+        }
 
         return new AuthResponse(jwtService.generateToken(user));
     }
