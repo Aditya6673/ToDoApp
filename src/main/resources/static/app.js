@@ -73,7 +73,7 @@ function decodeJwtSubject(token) {
 }
 
 const API_BASE = window.location.origin;
-const ALLOWED_ORIGINS = new Set(["http://localhost:8080", "http://127.0.0.1:8080"]);
+const ALLOWED_ORIGINS = new Set(["http://localhost:8080", "http://127.0.0.1:8080", "https://todoapp-4qet.onrender.com"]);
 
 async function api(path, options = {}) {
     const headers = {

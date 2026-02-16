@@ -35,11 +35,11 @@
 
         <form id="loginForm" class="panel active">
             <label for="loginIdentity">Username or Email</label>
-            <input id="loginIdentity" name="usernameOrEmail" required placeholder="you@example.com">
+            <input id="loginIdentity" name="usernameOrEmail" required placeholder="you@example.com" autocomplete="username">
 
             <label for="loginPassword">Password</label>
             <div class="password-field">
-                <input id="loginPassword" name="password" type="password" required placeholder="••••••••">
+                <input id="loginPassword" name="password" type="password" required placeholder="••••••••" autocomplete="current-password">
                 <button class="toggle-pass" type="button" data-target="loginPassword" aria-label="Show password">
                     <svg class="icon eye" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M12 5c-5.2 0-9.6 3.1-11 7 1.4 3.9 5.8 7 11 7s9.6-3.1 11-7c-1.4-3.9-5.8-7-11-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6Z"/>
@@ -55,14 +55,14 @@
 
         <form id="registerForm" class="panel">
             <label for="registerUsername">Username</label>
-            <input id="registerUsername" name="username" required minlength="3" maxlength="50" placeholder="aditya">
+            <input id="registerUsername" name="username" required minlength="3" maxlength="50" placeholder="aditya" autocomplete="username">
 
             <label for="registerEmail">Email</label>
-            <input id="registerEmail" name="email" type="email" required placeholder="you@example.com">
+            <input id="registerEmail" name="email" type="email" required placeholder="you@example.com" autocomplete="email">
 
             <label for="registerPassword">Password</label>
             <div class="password-field">
-                <input id="registerPassword" name="password" type="password" required minlength="6" placeholder="••••••••">
+                <input id="registerPassword" name="password" type="password" required minlength="6" placeholder="••••••••" autocomplete="new-password">
                 <button class="toggle-pass" type="button" data-target="registerPassword" aria-label="Show password">
                     <svg class="icon eye" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M12 5c-5.2 0-9.6 3.1-11 7 1.4 3.9 5.8 7 11 7s9.6-3.1 11-7c-1.4-3.9-5.8-7-11-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6Z"/>
